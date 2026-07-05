@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# knowledge-base
 
-## Getting Started
+Zendesk Guide / Helpjuice のオープンソース代替。AI検索・コンテンツワークフロー・バージョン履歴・マルチブランド対応のヘルプセンターをセルフホストで運用できます。
 
-First, run the development server:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/postcabinets-jp/knowledge-base&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,NEXT_PUBLIC_APP_URL)
+
+## なぜ knowledge-base か
+
+| 課題 | Zendesk Guide | Helpjuice | knowledge-base |
+|---|---|---|---|
+| 月額コスト | $55〜$219/席 | $249〜$799 | 無料（セルフホスト） |
+| 編集者上限 | 席数に比例 | プランに依存 | 無制限 |
+| コンテンツワークフロー | なし | $449〜のみ | 標準搭載 |
+| セルフホスト | 不可 | 不可 | Docker Compose対応 |
+| AI検索 | +$50/席 | $449〜のみ | BYO APIキー |
+
+## 機能
+
+- **リッチテキストエディタ** — TipTap ベース、コードブロック・callout・テーブル・画像対応
+- **3層カテゴリ構造** — カテゴリ → セクション → 記事
+- **4ステートワークフロー** — draft → in_review → approved → published
+- **全文検索 + AI検索** — PostgreSQL FTS + pgvector セマンティック検索（BYO OpenAI APIキー）
+- **バージョン履歴** — 全編集を自動記録・ロールバック対応
+- **検索アナリティクス** — ゼロ件クエリ、CTR、閲覧数、フィードバックスコア
+- **記事フィードバック** — 👍👎 + コメント、Helpfulness Rate 自動計算
+- **SEO最適化** — JSON-LD構造化データ、OGタグ、カスタムメタ
+- **完全なRLS** — Supabase Row Level Security で全テーブル保護
+- **マルチテナント** — 1インスタンスで複数組織・複数ヘルプセンター
+
+## クイックスタート
+
+### 1. Vercel にデプロイ（推奨）
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/postcabinets-jp/knowledge-base&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY,NEXT_PUBLIC_APP_URL)
+
+1. 上のボタンをクリック
+2. [Supabase](https://supabase.com) でプロジェクトを作成
+3. Supabase の SQL Editor で `supabase/migrations/` 内のマイグレーションファイルを実行
+4. 環境変数を設定してデプロイ
+
+### 2. ローカル開発
 
 ```bash
+git clone https://github.com/postcabinets-jp/knowledge-base
+cd knowledge-base
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Docker Compose（セルフホスト）
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone https://github.com/postcabinets-jp/knowledge-base
+cd knowledge-base
+cp .env.example .env
+docker compose up -d
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 環境変数
 
-## Learn More
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+```
 
-To learn more about Next.js, take a look at the following resources:
+## データベースセットアップ
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Supabase の SQL Editor で以下を順に実行：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. `supabase/migrations/20260705000001_initial_schema.sql`
+2. `supabase/seed.sql`（デモデータ、任意）
 
-## Deploy on Vercel
+## 技術スタック
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Next.js 15** App Router + TypeScript strict
+- **Supabase** PostgreSQL + Auth + RLS + Storage
+- **Tailwind CSS v4** + shadcn/ui
+- **pgvector** セマンティック検索
+- **Vercel** デプロイ
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## セキュリティ
+
+- セキュリティヘッダー（X-Frame-Options, X-Content-Type-Options 等）標準設定済み
+- API レートリミット 60 req/min/IP
+- 全テーブル RLS 有効
+- CORS: same-origin only
+
+## ライセンス
+
+MIT License
+
+---
+
+Built by [POST CABINETS](https://postcabinets.co.jp)
