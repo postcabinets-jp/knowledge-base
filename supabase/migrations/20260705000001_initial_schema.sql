@@ -530,3 +530,49 @@ CREATE POLICY "sq_select" ON search_queries
       WHERE hc.id = search_queries.help_center_id AND om.user_id = auth.uid()
     )
   );
+
+-- =====================================================
+-- RPC Functions (counter increments)
+-- =====================================================
+
+-- 記事閲覧数カウントアップ（認証不要、匿名可）
+CREATE OR REPLACE FUNCTION increment_view_count(article_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE articles
+  SET view_count = view_count + 1
+  WHERE id = article_id;
+END;
+$$;
+
+-- 記事「役に立った」カウントアップ
+CREATE OR REPLACE FUNCTION increment_helpful_count(article_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE articles
+  SET helpful_count = helpful_count + 1
+  WHERE id = article_id;
+END;
+$$;
+
+-- 記事「役に立たなかった」カウントアップ
+CREATE OR REPLACE FUNCTION increment_not_helpful_count(article_id UUID)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE articles
+  SET not_helpful_count = not_helpful_count + 1
+  WHERE id = article_id;
+END;
+$$;
